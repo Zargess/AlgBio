@@ -80,6 +80,17 @@ def backtrack(i, j, output1, output2):
 
     return output1 + "\n" + output2
 
+def count(i, j, counter):
+    if (i > 0) and (j > 0) and (T[i,j] == (T[i-1, j-1] + score[getIndex(A,i), getIndex(B,j)])):
+        counter = count(i-1, j-1, counter)
+    if (i > 0) and (j >= 0) and (T[i,j] == T[i-1, j] + gap_cost):
+        counter = count(i-1, j, counter)
+    if (i >= 0) and (j > 0) and (T[i,j] == T[i,j-1] + gap_cost):
+        counter = count(i, j-1, counter)
+    if(i == 0) and (j == 0):
+        counter = counter + 1
+    return counter
+    
 if __name__ == "__main__":
     args = sys.argv
     file1 = args[1]
@@ -90,13 +101,19 @@ if __name__ == "__main__":
     
 
     #TODO : Read fasta files and get lengths of strings
-    A = "AATAAT" #fastaSeq1["Seq1"].replace(" ", "")
-    B = "AAGG" #fastaSeq2["Seq2"].replace(" ", "")
+    #A = "AATAAT" 
+    #B = "AAGG" 
+    A = fastaSeq1["Seq1"].replace(" ", "")
+    B = fastaSeq2["Seq2"].replace(" ", "")
     n = len(A)
     m = len(B)
 
     T = np.empty([n+1, m+1])
     T[:] = float("inf")
     res = cost(n,m)
-    print(res)
-    print(backtrack(n, m, "", ""))
+    counter = 0
+    print("optimal cost for seqs: " + str(A) + " and " + str(B) + " is: \n" + str(res) + "\n")
+    print("an optimal alignment is: \n" + backtrack(n, m, "", "") + "\n")
+
+    print("number of possible optimal alignments is: \n" + str(count(n, m, counter)))
+    
