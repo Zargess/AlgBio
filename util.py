@@ -59,11 +59,11 @@ def parse_arguments(args):
     if os.path.isfile(file1):
         fastaSeq1 = read_fasta_file(file1)
     else:
-        fastaSeq1 = file1
+        fastaSeq1 = {"Seq1" : file1.upper()}
 
     if os.path.isfile(file2):
         fastaSeq2 = read_fasta_file(file2)
     else:
-        fastaSeq2 = file2
+        fastaSeq2 = {"Seq2" : file2.upper()}
 
     return score_matrix, gap_cost, should_output_allignment, alphabet, fastaSeq1, fastaSeq2
