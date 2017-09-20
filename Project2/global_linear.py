@@ -54,5 +54,7 @@ if __name__ == "__main__":
     res = cost(n,m)
     # TODO: If should_output_allignment == 1 -> print an optimal allignment
     if should_output_allignment == 1:
-        print("an optimal alignment is: \n" + backtrack(n, m, "", "") + "\n")
+        allignment = backtrack(n, m, "", "").split("\n")
+        print(">seq1\n" + allignment[0] + "\n")
+        print(">seq2\n" + allignment[1] + "\n")
     print("optimal cost for the two sequences is: \n" + str(res) + "\n")
