@@ -22,7 +22,7 @@ def read_fasta_file(filename):
                 sequences_lines[sequence_name] = current_sequence_lines
             else:
                 if current_sequence_lines is not None:
-                    current_sequence_lines.append(line)
+                    current_sequence_lines.append(line.upper())
     sequences = {}
     for name, lines in sequences_lines.items():
         sequences[name] = ''.join(lines)

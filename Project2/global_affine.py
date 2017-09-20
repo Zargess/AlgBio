@@ -138,8 +138,8 @@ if __name__ == "__main__":
     args = sys.argv
     score_matrix, alpha, beta, should_output_allignment, alphabet, fastaSeq1, fastaSeq2 = parse_arguments(args)
     """
-    A = fastaSeq1["Seq1"].replace(" ", "")
-    B = fastaSeq2["Seq2"].replace(" ", "")
+    A = next(iter(fastaSeq1.values())).replace(" ", "")
+    B = next(iter(fastaSeq2.values())).replace(" ", "")
     n = len(A)
     m = len(B)
 

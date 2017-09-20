@@ -13,10 +13,10 @@ T = None
 
 def cost(i, j):
     if T[i,j] == float("inf"):
-        v1 = -float("inf")
-        v2 = -float("inf")
-        v3 = -float("inf")
-        v4 = -float("inf")
+        v1 = float("inf")
+        v2 = float("inf")
+        v3 = float("inf")
+        v4 = float("inf")
 
         if i > 0 and j > 0:
             v1 = cost(i-1, j-1) + score_matrix[(A[i-1], B[j-1])]
@@ -27,7 +27,7 @@ def cost(i, j):
         if i == 0 and j == 0:
             v4 = 0
 
-        T[i,j] = max(v1, v2, v3, v4)
+        T[i,j] = min(v1, v2, v3, v4)
     return T[i,j]
 
 def backtrack(i, j, output1, output2):
@@ -44,8 +44,8 @@ if __name__ == "__main__":
     args = sys.argv
     score_matrix, gap_cost, should_output_allignment, alphabet, fastaSeq1, fastaSeq2 = util.parse_arguments(args)
 
-    A = fastaSeq1["Seq1"].replace(" ", "")
-    B = fastaSeq2["Seq2"].replace(" ", "")
+    A = next(iter(fastaSeq1.values())).replace(" ", "")
+    B = next(iter(fastaSeq2.values())).replace(" ", "")
     n = len(A)
     m = len(B)
 
