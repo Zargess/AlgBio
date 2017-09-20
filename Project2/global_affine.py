@@ -70,6 +70,38 @@ def backtrack(i, j, output1, output2):
 
     return output1 + "\n" + output2
 
+def backtrack_iter():
+    i = len(A)
+    j = len(B)
+    output1 = ""
+    output2 = ""
+    while i > 0 or j > 0:
+        if (i > 0 and j > 0) and (S[i,j] == S[i-1, j-1] + score_matrix[A[i-1], B[j-1]]):
+            output1 = A[i-1] + output1
+            output2 = B[j-1] + output2
+            i -= 1
+            j -= 1
+        else:
+            k = 1
+            while True:
+                print(k)
+                if (i >= k) and S[i,j] == (S[i - k, j] + (alpha * k + beta)):
+                    for q in range(0, k):
+                        output1 = A[i-1-q] + output1
+                        output2 = "-" + output2
+                    i = i - k
+                    break
+                elif (j >= k) and S[i,j] == (S[i, j-k] + (alpha * k + beta)):
+                    for q in range(0, k):
+                        output1 = "-" + output1
+                        output2 = B[i-1 - q] + output2
+                    j = j - k
+                    break
+                else:
+                    k = k + 1
+
+    return output1 + "\n" + output2
+
 def parse_arguments(args):
     score_matrix_file = args[1]
     a = int(args[2])
@@ -138,7 +170,7 @@ def run_experiment(startN, iterations):
 if __name__ == "__main__":
     args = sys.argv
     score_matrix, alpha, beta, should_output_allignment, alphabet, fastaSeq1, fastaSeq2 = parse_arguments(args)
-    """
+    
     A = next(iter(fastaSeq1.values())).replace(" ", "")
     B = next(iter(fastaSeq2.values())).replace(" ", "")
     n = len(A)
@@ -153,14 +185,13 @@ if __name__ == "__main__":
 
     res = cost_S(n,m)
     if should_output_allignment == 1:
-        allignment = backtrack(n, m, "", "").split("\n")
+        #allignment = backtrack(n, m, "", "").split("\n")
+        allignment = backtrack_iter().split("\n")
         print(">seq1\n" + allignment[0] + "\n")
         print(">seq2\n" + allignment[1] + "\n")
 
     print("optimal cost for the two sequences is: \n" + str(res) + "\n")
-
-    print(util.generate_data_equal_length(10, 2))
-    """
-    lengths, values = run_experiment(10, 15)
-    util.write_experiment_results_to_file("data/global_affine.data", lengths, values)
+   
+    #lengths, values = run_experiment(10, 15)
+    #util.write_experiment_results_to_file("data/global_affine.data", lengths, values)
     #plotfile.plotValues([(, "Test")], "Time")
