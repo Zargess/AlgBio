@@ -84,7 +84,6 @@ def backtrack_iter():
         else:
             k = 1
             while True:
-                print(k)
                 if (i >= k) and S[i,j] == (S[i - k, j] + (alpha * k + beta)):
                     for q in range(0, k):
                         output1 = A[i-1-q] + output1

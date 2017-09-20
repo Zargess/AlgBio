@@ -78,7 +78,7 @@ def run_experiment(startN, iterations):
 if __name__ == "__main__":
     args = sys.argv
     score_matrix, gap_cost, should_output_allignment, alphabet, fastaSeq1, fastaSeq2 = util.parse_arguments(args)
-    """
+    
     A = next(iter(fastaSeq1.values())).replace(" ", "")
     B = next(iter(fastaSeq2.values())).replace(" ", "")
     
@@ -94,6 +94,6 @@ if __name__ == "__main__":
         print(">seq1\n" + allignment[0] + "\n")
         print(">seq2\n" + allignment[1] + "\n")
     print("optimal cost for the two sequences is: \n" + str(res) + "\n")
-    """
-    lengths, values = run_experiment(10, 15)
-    util.write_experiment_results_to_file("data/global_linear.data", lengths, values)
+    
+    #lengths, values = run_experiment(10, 15)
+    #util.write_experiment_results_to_file("data/global_linear.data", lengths, values)
