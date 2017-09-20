@@ -1,8 +1,10 @@
 import numpy as np
 import os, sys
 import os.path
+import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import util
+import plotfile
 
 A = ""
 B = ""
@@ -91,10 +93,51 @@ def parse_arguments(args):
 
     return score_matrix, a, b, should_output_allignment, alphabet, fastaSeq1, fastaSeq2
 
+def runAlgo(string1, string2):
+    global A
+    global B
+    global S
+    global D
+    global I
+
+    A = string1
+    B = string2
+    n = len(A)
+    m = len(B)
+
+    S = np.empty([n+1, m+1])
+    D = np.empty([n+1, m+1])
+    I = np.empty([n+1, m+1])
+    S[:] = float("inf")
+    D[:] = float("inf")
+    I[:] = float("inf")
+    
+    return cost_S(n,m)
+
+def run_experiment(startN, iterations):
+    length = startN
+    set1, set2 = util.generate_data_equal_length(startN, iterations)
+    lengths = []
+    values = []
+    counter = 0
+    for i in range(0, iterations):
+
+        start = time.time()
+        for j in range(0, 5):
+            runAlgo(set1[counter], set2[counter])
+            counter += 1
+        end = time.time()
+
+        lengths.append(length)
+        values.append((end - start) / 5)
+        length = int(length * 1.5)
+    return lengths, values
+
+
 if __name__ == "__main__":
     args = sys.argv
     score_matrix, alpha, beta, should_output_allignment, alphabet, fastaSeq1, fastaSeq2 = parse_arguments(args)
-
+    """
     A = fastaSeq1["Seq1"].replace(" ", "")
     B = fastaSeq2["Seq2"].replace(" ", "")
     n = len(A)
@@ -114,3 +157,7 @@ if __name__ == "__main__":
         print(">seq2\n" + allignment[1] + "\n")
 
     print("optimal cost for the two sequences is: \n" + str(res) + "\n")
+
+    print(util.generate_data_equal_length(10, 2))
+    """
+    plotfile.plotValues([(run_experiment(10, 2000), "Test")], "Time")

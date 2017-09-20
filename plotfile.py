@@ -36,7 +36,7 @@ def plotValues(allData, ylabel):
 	
 	marker = itertools.cycle(allMarkers)
 	
-	
+	print(allData)
 	for ((inputsize, value), legend) in allData:
 		plt.plot(inputsize, value , marker=next(marker), linestyle ='--', label=legend)
 		highestY = value[len(value)-1]
@@ -45,6 +45,7 @@ def plotValues(allData, ylabel):
 	plt.xlabel('Inputsize')
 	plt.ylabel(ylabel)
 	plt.xscale("log", basex=2)
+	plt.show()
 	#plt.axvline(x=2**13, color='black', linestyle='--', label="L1 cache size")
 	#plt.text(2**13, highestY*1.4	, "L1 cache size",  rotation=270)
 

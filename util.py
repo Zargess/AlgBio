@@ -1,6 +1,7 @@
 import numpy as np
 import os, sys
 import os.path
+from random import randint
 
 def read_fasta_file(filename):
     """
@@ -78,3 +79,34 @@ def parse_arguments(args):
         fastaSeq2 = {"Seq2" : file2.upper()}
 
     return score_matrix, gap_cost, should_output_allignment, alphabet, fastaSeq1, fastaSeq2
+
+def generate_random_string(n):
+    res = ""
+
+    for i in range(0, n):
+        j = randint(0, 3)
+
+        if j == 0:
+            res += "A"
+        elif j == 1:
+            res += "C"
+        elif j == 2:
+            res += "G"
+        else:
+            res += "T"
+
+    return res
+
+def generate_data_equal_length(startN, iterations):
+    n = startN
+
+    set1 = []
+    set2 = []
+
+    for i in range (0, iterations):
+        for j in range (0, 5):
+            set1.append(generate_random_string(n))
+            set2.append(generate_random_string(n))
+        n = int(n * 1.5)
+
+    return set1, set2
