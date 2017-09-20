@@ -1,6 +1,7 @@
 import numpy as np
 import os, sys
 import os.path
+import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import util
 
@@ -40,12 +41,47 @@ def backtrack(i, j, output1, output2):
 
     return output1 + "\n" + output2
 
+def runAlgo(string1, string2):
+    global A
+    global B
+    global T
+
+    A = string1
+    B = string2
+    n = len(A)
+    m = len(B)
+
+    T = np.empty([n+1, m+1])
+    T[:] = float("inf")
+    return cost(n,m)
+
+def run_experiment(startN, iterations):
+    length = startN
+    set1, set2 = util.generate_data_equal_length(startN, iterations)
+    lengths = []
+    values = []
+    counter = 0
+    print("Starting experiment")
+    for i in range(0, iterations):
+
+        start = time.time()
+        for j in range(0, 5):
+            runAlgo(set1[counter], set2[counter])
+            counter += 1
+        end = time.time()
+        print("Iteration: " + str(i) + " is complete")
+        lengths.append(length)
+        values.append((end - start) / 5)
+        length = int(length * 1.3)
+    return lengths, values
+
 if __name__ == "__main__":
     args = sys.argv
     score_matrix, gap_cost, should_output_allignment, alphabet, fastaSeq1, fastaSeq2 = util.parse_arguments(args)
-
+    """
     A = next(iter(fastaSeq1.values())).replace(" ", "")
     B = next(iter(fastaSeq2.values())).replace(" ", "")
+    
     n = len(A)
     m = len(B)
 
@@ -56,3 +92,6 @@ if __name__ == "__main__":
     if should_output_allignment == 1:
         print("an optimal alignment is: \n" + backtrack(n, m, "", "") + "\n")
     print("optimal cost for the two sequences is: \n" + str(res) + "\n")
+    """
+    lengths, values = run_experiment(10, 15)
+    util.write_experiment_results_to_file("data/global_linear.data", lengths, values)

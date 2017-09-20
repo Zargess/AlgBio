@@ -39,6 +39,11 @@ def write_fasta_file(filename, content):
 				fp.write(content[i:i+60])
 			fp.write("\n")
 
+def write_experiment_results_to_file(filename, lengths, values):
+    with open(filename, "w+") as fp:
+        for i in range(0, len(lengths)):
+            fp.write(str(lengths[i]) + "," + str(values[i]) + "\n")
+
 def read_score_matrix_and_alphabet(filename):
     score_matrix = {}
     symbols = []
@@ -104,9 +109,10 @@ def generate_data_equal_length(startN, iterations):
     set2 = []
 
     for i in range (0, iterations):
+        print("Generating data for iteration: " + str(i) + " with length: " + str(n))
         for j in range (0, 5):
             set1.append(generate_random_string(n))
             set2.append(generate_random_string(n))
-        n = int(n * 1.5)
+        n = int(n * 1.3)
 
     return set1, set2
