@@ -7,8 +7,8 @@ import util
 A = ""
 B = ""
 score_matrix = {}
-alpha = 5
-beta = 5
+alpha = 0
+beta = 0
 alphabet = []
 
 S = None
@@ -68,9 +68,32 @@ def backtrack(i, j, output1, output2):
 
     return output1 + "\n" + output2
 
+def parse_arguments(args):
+    score_matrix_file = args[1]
+    a = int(args[2])
+    b = int(args[3])
+    file1 = args[4]
+    file2 = args[5]
+    should_output_allignment = int(args[6])
+    score_matrix,alphabet = util.read_score_matrix_and_alphabet(score_matrix_file)
+    fastaSeq1 = ""
+    fastaSeq2 = ""
+
+    if os.path.isfile(file1):
+        fastaSeq1 = util.read_fasta_file(file1)
+    else:
+        fastaSeq1 = {"Seq1" : file1.upper()}
+
+    if os.path.isfile(file2):
+        fastaSeq2 = util.read_fasta_file(file2)
+    else:
+        fastaSeq2 = {"Seq2" : file2.upper()}
+
+    return score_matrix, a, b, should_output_allignment, alphabet, fastaSeq1, fastaSeq2
+
 if __name__ == "__main__":
     args = sys.argv
-    score_matrix, gap_cost, should_output_allignment, alphabet, fastaSeq1, fastaSeq2 = util.parse_arguments(args)
+    score_matrix, alpha, beta, should_output_allignment, alphabet, fastaSeq1, fastaSeq2 = parse_arguments(args)
 
     A = fastaSeq1["Seq1"].replace(" ", "")
     B = fastaSeq2["Seq2"].replace(" ", "")
@@ -85,9 +108,9 @@ if __name__ == "__main__":
     I[:] = float("inf")
 
     res = cost_S(n,m)
-    print(S)
-    print(D)
-    print(I)
     if should_output_allignment == 1:
-        print("an optimal alignment is: \n" + backtrack(n, m, "", "") + "\n")
+        allignment = backtrack(n, m, "", "").split("\n")
+        print(">seq1\n" + allignment[0] + "\n")
+        print(">seq2\n" + allignment[1] + "\n")
+
     print("optimal cost for the two sequences is: \n" + str(res) + "\n")

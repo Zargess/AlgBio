@@ -27,6 +27,17 @@ def read_fasta_file(filename):
         sequences[name] = ''.join(lines)
     return sequences
 
+def write_fasta_file(filename, content):
+	with open(filename + ".fa", 'w+')  as fp:
+		fp.write(">" + filename)
+		fp.write("\n")
+		for i in range(0, len(content), 60):
+			if(len(content) < i + 60):
+				fp.write(content[i:len(content)])
+			else:
+				fp.write(content[i:i+60])
+			fp.write("\n")
+
 def read_score_matrix_and_alphabet(filename):
     score_matrix = {}
     symbols = []
