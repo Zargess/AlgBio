@@ -120,6 +120,7 @@ def run_experiment(startN, iterations):
     lengths = []
     values = []
     counter = 0
+    print("Starting experiment")
     for i in range(0, iterations):
 
         start = time.time()
@@ -127,10 +128,10 @@ def run_experiment(startN, iterations):
             runAlgo(set1[counter], set2[counter])
             counter += 1
         end = time.time()
-
+        print("Iteration: " + str(i) + " is complete")
         lengths.append(length)
         values.append((end - start) / 5)
-        length = int(length * 1.5)
+        length = int(length * 1.3)
     return lengths, values
 
 
@@ -160,4 +161,6 @@ if __name__ == "__main__":
 
     print(util.generate_data_equal_length(10, 2))
     """
-    plotfile.plotValues([(run_experiment(10, 2000), "Test")], "Time")
+    lengths, values = run_experiment(10, 15)
+    util.write_experiment_results_to_file("data/global_affine.data", lengths, values)
+    #plotfile.plotValues([(, "Test")], "Time")
