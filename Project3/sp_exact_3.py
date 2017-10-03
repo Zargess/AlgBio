@@ -29,9 +29,9 @@ def SP(a, b, c):
     return 2 * gap_cost
 
 def calc_T(n, m, l):
-    for i in range(0, n):
-        for j in range(0, m):
-            for k in range(0, l):
+    for i in range(0, n+1):
+        for j in range(0, m+1):
+            for k in range(0, l+1):
                 v0 = float("inf")
                 v1 = float("inf")
                 v2 = float("inf")
@@ -66,10 +66,13 @@ if __name__ == "__main__":
     args = sys.argv
 
     score, _ = util.read_score_matrix_and_alphabet(args[1])
+    fastaDictionary = util.read_fasta_file(args[2])
+    sequences = iter(fastaDictionary.values())
+
     print(score)
-    A = "aacgt"
-    B = "ggatc"
-    C = "aaaaa"
+    A = next(sequences).replace(" ", "")
+    B = next(sequences).replace(" ", "")
+    C = next(sequences).replace(" ", "")
     # Length of the strings plus 1
     n = len(A)
     m = len(B)
@@ -80,5 +83,3 @@ if __name__ == "__main__":
     T[:] = float("inf")
 
     calc_T(n, m, l)
-
-    #print(T)
