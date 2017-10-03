@@ -2,6 +2,7 @@ import numpy as np
 import os, sys
 import os.path
 import time
+import global_linear as linear
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import util
 
@@ -69,7 +70,6 @@ if __name__ == "__main__":
     fastaDictionary = util.read_fasta_file(args[2])
     sequences = iter(fastaDictionary.values())
 
-    print(score)
     A = next(sequences).replace(" ", "")
     B = next(sequences).replace(" ", "")
     C = next(sequences).replace(" ", "")
