@@ -5,6 +5,8 @@ import time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import util
 
+
+
 A = ""
 B = ""
 score_matrix = {}
@@ -18,13 +20,13 @@ def cost(i, j):
         v2 = float("inf")
         v3 = float("inf")
         v4 = float("inf")
-
+        
         if i > 0 and j > 0:
             v1 = cost(i-1, j-1) + score_matrix[(A[i-1], B[j-1])]
         if i > 0 and j >= 0:
-            v2 = cost(i-1, j) + gap_cost
+            v2 = cost(i-1, j) + int(gap_cost)
         if i >= 0 and j > 0:
-            v3 = cost(i, j-1) + gap_cost
+            v3 = cost(i, j-1) + int(gap_cost)
         if i == 0 and j == 0:
             v4 = 0
 
@@ -34,27 +36,39 @@ def cost(i, j):
 def backtrack(i, j, output1, output2):
     if (i > 0) and (j > 0) and (T[i,j] == (T[i-1, j-1] + score_matrix[A[i-1], B[j-1]])):
         return backtrack(i-1, j-1, A[i-1] + output1, B[j-1] + output2)
-    if (i > 0) and (j >= 0) and (T[i,j] == T[i-1, j] + gap_cost):
+    if (i > 0) and (j >= 0) and (T[i,j] == T[i-1, j] + int(gap_cost)):
         return backtrack(i-1, j, A[i-1] + output1, "-" + output2)
-    if (i >= 0) and (j > 0) and (T[i,j] == T[i,j-1] + gap_cost):
+    if (i >= 0) and (j > 0) and (T[i,j] == T[i,j-1] + int(gap_cost)):
         return backtrack(i, j-1, "-" + output1, B[j-1] + output2)
 
     return output1 + "\n" + output2
 
-def runAlgo(string1, string2):
+def runAlgo(string1, string2, s_mat=score_matrix, gc=gap_cost):
     global A
     global B
     global T
+    global score_matrix
+    global gap_cost    
 
     A = string1
     B = string2
+    
     n = len(A)
     m = len(B)
-
+    score_matrix = s_mat
+    gap_cost = gc
+    
+    
+	
     T = np.empty([n+1, m+1])
     T[:] = float("inf")
-    return cost(n,m)
+    s = cost(n,m)
+    return s
 
+def runAlgoWithBacktrack(string1, string2, s_mat=score_matrix, gc=gap_cost):
+	runAlgo(string1, string2, s_mat=score_matrix, gc=gap_cost)
+	return backtrack(len(string1), len(string2), "", "").split("\n")
+	
 def run_experiment(startN, iterations):
     length = startN
     set1, set2 = util.generate_data_equal_length(startN, iterations)
@@ -81,19 +95,22 @@ if __name__ == "__main__":
     
     A = next(iter(fastaSeq1.values())).replace(" ", "")
     B = next(iter(fastaSeq2.values())).replace(" ", "")
-    
+    print(A)
+    print(B)
+    	
     n = len(A)
     m = len(B)
-
-    T = np.empty([n+1, m+1])
-    T[:] = float("inf")
-    res = cost(n,m)
+    runAlgo(A, B, s_mat=score_matrix, gc=gap_cost)
+    #T = np.empty([n+1, m+1])
+    #T[:] = float("inf")
+    #print(np.dtype(T[0,0]))
+    #res = cost(n,m)
     # TODO: If should_output_allignment == 1 -> print an optimal allignment
     if should_output_allignment == 1:
         allignment = backtrack(n, m, "", "").split("\n")
         print(">seq1\n" + allignment[0] + "\n")
         print(">seq2\n" + allignment[1] + "\n")
-    print("optimal cost for the two sequences is: \n" + str(res) + "\n")
+    #print("optimal cost for the two sequences is: \n" + str(res) + "\n")
     
     #lengths, values = run_experiment(10, 15)
     #util.write_experiment_results_to_file("data/global_linear.data", lengths, values)
