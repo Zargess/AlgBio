@@ -29,7 +29,6 @@ def find_center(sequences):
 				s = linear.runAlgo(sequences[i], sequences[j], s_mat=score, gc=gap_cost)
 				
 				sum +=  s
-		print("I: {}, SUM: {}".format(i,sum))		
 		if(sum < bestSum):
 			bestSum = sum
 			bestSeq = i
@@ -47,6 +46,7 @@ def construct_alignment(sequences, bestSeqIdx):
 	for i in range(0, len(sequences)):
 		if(i != bestSeqIdx): 
 			A = linear.runAlgoWithBacktrack(sequences[bestSeqIdx], sequences[i], s_mat=score, gc=gap_cost)
+			#print(A)
 			newM = extend_alignment(oldM, A)
 			oldM = newM
 	return oldM
@@ -77,19 +77,32 @@ def extend_alignment(oldM, A):
 					break
 		if(j > n):
 			insertGapColAndSym(newM, c, A[1][c])
-	
+	if(j+diff >= c): 
+		newM = np.resize(newM, (newM.shape[0], newM.shape[1]-len(A[1])))
+	if(j+diff <= newM.shape[1]):
+		newM = np.resize(newM, (newM.shape[0], j+diff))
+	#print(j)
+	#print(diff)
+	#print(newM.shape)
+		
 	while(j <= n):
 		insertOldColAndGap(newM, j+diff)
 		j += 1
+		
+	
 	return newM
 
 def insertOldColAndGap(newM, oldM, j, jdiff):
 	newM[0:oldM.shape[0],jdiff] = oldM[:,j]
+	print(decode_matrix(oldM[:,j]))
+	print(decode_matrix(newM[:,jdiff]))
 	newM[newM.shape[0]-1, jdiff] = ord('-')
+	print(decode_matrix(newM[:,jdiff]))
 
 def insertOldColAndSym(newM, oldM, j, jdiff, sym):
 	newM[0:oldM.shape[0],jdiff] = oldM[:,j]
 	newM[newM.shape[0]-1, jdiff] = ord(sym)
+	
 	
 def insertGapColAndSym(newM, jdiff, sym):
 	newM[0:newM.shape[0]-1,jdiff] = ord('-')
@@ -119,6 +132,11 @@ if __name__ == "__main__":
 
     center = find_center(sequences)
     m = construct_alignment(sequences, center)
-    print(decode_matrix(m))
-
+    dm = decode_matrix(m)
+	
+    print(''.join(dm[0,:]))
+    print(''.join(dm[1,:]))
+    print(''.join(dm[2,:]))
+	
+	
     
