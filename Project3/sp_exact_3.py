@@ -126,4 +126,4 @@ if __name__ == "__main__":
     T[:] = float("inf")
 
     calc_T(n, m, l)
-    print(backtrack(n,m,l,"","",""))
+    util.write_fasta_file("sp_exact_3_result", backtrack(n,m,l,"","","").split("\n"))
