@@ -16,20 +16,26 @@ if __name__ == "__main__":
 	approxScores = []
 	exactScores = []
 	i = 0
-	for file in os.listdir(fileFolder):
+	files = os.listdir(fileFolder)
+	files.sort(key=lambda x: int(x.split("_")[1]))
+	inputlength = []
+	for file in files:
 		splitted = file.split("_")
+
+		inputlength.append(int(splitted[1]))
 		i += 1
 		print("Processing file: {}".format(file))
 		sequences = [s.replace(" ", "") for s in util.read_fasta_file(fileFolder + "/" + file).values()]
 		
 		approxScores.append(sp_approx.compute_score(score, gap_cost, sequences))
 		exactScores.append(sp_exact_3.compute_score(score, gap_cost, sequences))
-		if (i == 2): 
-			break
-	
-	with open("results.txt", "w+") as fp:
-		for i in range(0,len(exactScores)):
-			fp.write(splitted[1] + "," + str(int(exactScores[i])) + "," + str(approxScores[i]) + "\n")
+	print(exactScores)
+	print(approxScores)
+		
+
+	#with open("results.txt", "w+") as fp:
+	#	for i in range(0,len(exactScores)):
+	#		fp.write(str(inputlength[i]) + "," + str((float(approxScores[i]) / float(exactScores[i]))) + "\n")
 			
 		
 		

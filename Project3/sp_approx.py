@@ -94,9 +94,11 @@ def construct_alignment(sequences, bestSeqIdx):
 		if(i != bestSeqIdx): 
 			A = linear.runAlgoWithBacktrack(sequences[bestSeqIdx], sequences[i], s_mat=score, gc=gap_cost)
 			#print(A)
-			#print(decode_matrix(oldM))
+			#print("Before extending:")
+			#pp_matrix(oldM)
 			newM = extend_alignment(oldM, A)
-			#print(decode_matrix(newM))
+			#print("After extending:")
+			#pp_matrix(newM)
 			oldM = newM
 	return oldM
 
@@ -109,6 +111,13 @@ def extend_alignment(oldM, A):
 	diff = 0
 	j = 0
 	for c in range (0, m):
+		if(j >= n):
+			#pp_matrix(newM)
+			#print("M: {} C: {}".format(m,c))
+			insertGapColAndSym(newM, j+diff, A[1][c])
+			#pp_matrix(newM)
+			j += 1
+			
 		while(j < n):
 			if A[0][c] != '-':
 				if chr(oldM[0, j]) == '-':
@@ -124,29 +133,34 @@ def extend_alignment(oldM, A):
 				if chr(oldM[0,j]) != '-':
 					insertGapColAndSym(newM, j+diff, A[1][c])
 					diff += 1
-					#print("third case")
 					break
 				else:
 					insertOldColAndSym(newM, oldM, j, j+diff, A[1][c])
 					j += 1
-					#print("fourth case")
 					break
-		if(j > n):
-			insertGapColAndSym(newM, c, A[1][c])
-			#print("is it here?")
-	#if(j+diff >= c): 
-	#	newM = np.resize(newM, (newM.shape[0], newM.shape[1]-len(A[1])))
-	#if(j+diff <= newM.shape[1]):
+		
+			
+	
+	#if(j+diff > n): 
+	
+	#if(j+diff < newM.shape[1]):
 	#	newM = np.resize(newM, (newM.shape[0], j+diff))
 	#print(j)
 	#print(diff)
 	#print(newM.shape)
 	#print("After extension")
 	#pp_matrix(newM)	
-	#while(j < n):
-	#	insertOldColAndGap(newM, oldM, j, j+diff)
-	#	j += 1
-		
+	while(j < n):
+		insertOldColAndGap(newM, oldM, j, j+diff)
+		j += 1
+	#print("Before resize")
+	#print(newM.shape[1])
+	#pp_matrix(newM)
+	newM = newM[newM.nonzero()].reshape((newM.shape[0], -1))
+	newM = np.resize(newM, (newM.shape[0], (j+diff)))	
+	#print("After resize")
+	#print(newM.shape[1])
+	#pp_matrix(newM)
 	
 	return newM
 
@@ -186,6 +200,9 @@ def compute_score(s_mat, gc, sequences):
 	center = find_center(sequences)
 	m = construct_alignment(sequences, center)
 	dm = decode_matrix(m)
+	#print("Result of approx:")
+	#pp_matrix(m)
+	#print(m.shape[1])
 	content = []
 	for i in range(0, dm.shape[0]):
 		content.append(str(''.join(dm[i,:])))

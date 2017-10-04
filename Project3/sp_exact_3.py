@@ -101,7 +101,8 @@ def compute_score(s_mat, gc, sequences):
 
 	T[:] = float("inf")
 	calc_T(n, m, l)
-	
+	#print("Result of exact:")
+	#print(backtrack(n,m,l,"","",""))
 	return T[m,n,l]
 	
 if __name__ == "__main__":

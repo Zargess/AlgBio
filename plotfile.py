@@ -45,9 +45,11 @@ def plotValues(allData, ylabel):
 	
 	print(allData)
 	for ((inputsize, value), legend) in allData:
-		plt.plot(inputsize, create_normalized_list(inputsize, value), marker=next(marker), linestyle ='--', label=legend)
+		plt.plot(inputsize, value, marker=next(marker), linestyle ='--', label=legend)
 		highestY = value[len(value)-1]
 	
+	plt.axhline(y=(4/3), color='r', linestyle='-')
+	plt.axhline(y=1, color='b', linestyle='-')
 	plt.legend(loc=2, borderaxespad=0.)
 	plt.xlabel('Inputsize')
 	plt.ylabel(ylabel)
@@ -78,9 +80,8 @@ def plot(folder):
 	# List elements are tuples with layout ((N, value), legend)
 	#Plotting runtime divided by log(n)
 	allRuntimes = []
-	allRuntimes.append((readFile("./" + folder + "/data/global_affine.data"), "Global Affine"))
-	allRuntimes.append((readFile("./" + folder + "/data/global_linear.data"), "Global Linear"))
-	plotValues(allRuntimes, 'Time')
+	allRuntimes.append((readFile("./" + folder + "/results.txt"), "Global Affine"))
+	plotValues(allRuntimes, 'Approx/Exact ratio')
 	
 	plt.show()
 	
