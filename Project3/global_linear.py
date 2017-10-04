@@ -100,7 +100,8 @@ if __name__ == "__main__":
     	
     n = len(A)
     m = len(B)
-    runAlgo(A, B, s_mat=score_matrix, gc=gap_cost)
+	
+    print(runAlgo(A, B, s_mat=score_matrix, gc=gap_cost))
     #T = np.empty([n+1, m+1])
     #T[:] = float("inf")
     #print(np.dtype(T[0,0]))

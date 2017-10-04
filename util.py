@@ -30,14 +30,18 @@ def read_fasta_file(filename):
 
 def write_fasta_file(filename, content):
 	with open(filename + ".fa", 'w+')  as fp:
-		fp.write(">" + filename)
-		fp.write("\n")
-		for i in range(0, len(content), 60):
-			if(len(content) < i + 60):
-				fp.write(content[i:len(content)])
-			else:
-				fp.write(content[i:i+60])
+		j = 0
+		for s in content:			
+			j += 1
+			fp.write(">seq" + str(j))
 			fp.write("\n")
+			for i in range(0, len(s), 60):
+				if(len(s) < i + 60):
+					fp.write(s[i:len(s)])
+				else:
+					fp.write(s[i:i+60])
+				fp.write("\n")
+		fp.truncate()
 
 def write_experiment_results_to_file(filename, lengths, values):
     with open(filename, "w+") as fp:
