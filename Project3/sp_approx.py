@@ -211,7 +211,8 @@ if __name__ == "__main__":
     l = len(C)
     #sequences = ["AGTACC", "AGATCC", "TTATG", "ACTACG", "ACTTGG"] #, "AAACTA", "AGCTAA"]
     center = find_center(sequences)
-    m = construct_alignment_fac(sequences, center)
+    
+    m = construct_alignment(sequences, center)
     dm = decode_matrix(m)
 	
     content = []
