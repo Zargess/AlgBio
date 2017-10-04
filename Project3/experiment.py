@@ -29,13 +29,13 @@ if __name__ == "__main__":
 		
 		approxScores.append(sp_approx.compute_score(score, gap_cost, sequences))
 		exactScores.append(sp_exact_3.compute_score(score, gap_cost, sequences))
-	print(exactScores)
-	print(approxScores)
+	#print(exactScores)
+	#print(approxScores)
 		
 
-	#with open("results.txt", "w+") as fp:
-	#	for i in range(0,len(exactScores)):
-	#		fp.write(str(inputlength[i]) + "," + str((float(approxScores[i]) / float(exactScores[i]))) + "\n")
+	with open("results.txt", "w+") as fp:
+		for i in range(0,len(exactScores)):
+			fp.write(str(inputlength[i]) + "," + str((float(approxScores[i]) / float(exactScores[i]))) + "\n")
 			
 		
 		
