@@ -62,7 +62,6 @@ def calc_T(n, m, l):
 
                 T[i, j, k] = min(v0, v1, v2, v3, v4, v5, v6, v7)
 
-    print(T[n,m,l])
 	
 def backtrack(i, j, k, output1, output2, output3):
 	if (i > 0) and (j > 0) and (k > 0) and (T[i,j, k] == (T[i-1, j-1, k-1] + SP(A[i-1], B[j-1], C[k-1]))):
@@ -101,8 +100,6 @@ def compute_score(s_mat, gc, sequences):
 
 	T[:] = float("inf")
 	calc_T(n, m, l)
-	#print("Result of exact:")
-	#print(backtrack(n,m,l,"","",""))
 	return T[m,n,l]
 	
 if __name__ == "__main__":
@@ -120,10 +117,11 @@ if __name__ == "__main__":
     n = len(A)
     m = len(B)
     l = len(C)
+	
 
     T = np.empty([n+1, m+1, l+1])
-
     T[:] = float("inf")
-
     calc_T(n, m, l)
-    util.write_fasta_file("sp_exact_3_result", backtrack(n,m,l,"","","").split("\n"))
+	
+    print("Score of optimal multiple alignment: \n{}".format(T[n,m,l]))
+    print("Optimal multiple alignment: \n{}".format(backtrack(n,m,l,"","","")))

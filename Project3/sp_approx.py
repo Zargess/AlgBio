@@ -32,12 +32,8 @@ def find_center(sequences):
 		sum = 0
 		for j in range (0, len(sequences)):
 			if(i != j):
-				#print(sequences[i])
-				#print(sequences[j])
 				s = linear.runAlgo(sequences[i], sequences[j], s_mat=score, gc=gap_cost)
-				#print(s)
 				sum +=  s
-		#print(sum)
 		if(sum < bestSum):
 			bestSum = sum
 			bestSeq = i
@@ -46,38 +42,26 @@ def find_center(sequences):
 
 def construct_alignment_fac(sequences, bestSeqIdx):
 	center = sequences[bestSeqIdx]
-#	oldM = np.empty((1, len(center)), dtype='int')
-	
-	# Convert to ASCII codes
-#	for i in range(0, len(sequences[bestSeqIdx])):
-#		oldM[0, i] = ord(center[i])
 	
 	indicies = [0,1,2,3,4]
 	indicies.remove(bestSeqIdx)
 	allPerms = list(itertools.permutations(indicies))
-	c = 0
 	for perm in allPerms: 		
 		oldM = np.empty((1, len(center)), dtype='int')
 		
 		# Convert to ASCII codes
 		for i in range(0, len(sequences[bestSeqIdx])):
 			oldM[0, i] = ord(center[i])
-		c += 1
 		for i in perm:
 			A = linear.runAlgoWithBacktrack(sequences[bestSeqIdx], sequences[i], s_mat=score, gc=gap_cost)
-			#print(A)
-			#print(decode_matrix(oldM))
 			newM = extend_alignment(oldM, A)
-			#print(decode_matrix(newM))
 			oldM = newM
 		dm = decode_matrix(oldM)
 		content = []
 		for i in range(0, dm.shape[0]):
 			content.append(str(''.join(dm[i,:])))
 		util.write_fasta_file("testfile", content)
-		print("Score for perm: {} is: {}".format(perm, msa_sp_score_3k.compute_sp_score("testfile.fa")))
-		
-		
+		print("Score for perm: {} is: {}".format(perm, msa_sp_score_3k.compute_sp_score("testfile.fa")))	
 	return oldM
 
 	
@@ -89,33 +73,22 @@ def construct_alignment(sequences, bestSeqIdx):
 	for i in range(0, len(sequences[bestSeqIdx])):
 		oldM[0, i] = ord(center[i])
 	
-	
 	for i in range(0, len(sequences)):
 		if(i != bestSeqIdx): 
 			A = linear.runAlgoWithBacktrack(sequences[bestSeqIdx], sequences[i], s_mat=score, gc=gap_cost)
-			#print(A)
-			#print("Before extending:")
-			#pp_matrix(oldM)
 			newM = extend_alignment(oldM, A)
-			#print("After extending:")
-			#pp_matrix(newM)
 			oldM = newM
 	return oldM
 
 def extend_alignment(oldM, A):
 	m = max([len(w) for w in A])
 	n = oldM.shape[1]
-	#print("Alignment: ")
-	#print(A)
 	newM = np.zeros((oldM.shape[0]+1, oldM.shape[1] + len(A[1])), dtype='int')
 	diff = 0
 	j = 0
 	for c in range (0, m):
 		if(j >= n):
-			#pp_matrix(newM)
-			#print("M: {} C: {}".format(m,c))
 			insertGapColAndSym(newM, j+diff, A[1][c])
-			#pp_matrix(newM)
 			j += 1
 			
 		while(j < n):
@@ -123,11 +96,9 @@ def extend_alignment(oldM, A):
 				if chr(oldM[0, j]) == '-':
 					insertOldColAndGap(newM, oldM, j, j+diff)
 					j += 1
-					#print("First case")
 				else:
 					insertOldColAndSym(newM, oldM, j, j+diff, A[1][c])
 					j += 1
-					#print("second case")
 					break
 			else:
 				if chr(oldM[0,j]) != '-':
@@ -138,48 +109,20 @@ def extend_alignment(oldM, A):
 					insertOldColAndSym(newM, oldM, j, j+diff, A[1][c])
 					j += 1
 					break
-		
-			
-	
-	#if(j+diff > n): 
-	
-	#if(j+diff < newM.shape[1]):
-	#	newM = np.resize(newM, (newM.shape[0], j+diff))
-	#print(j)
-	#print(diff)
-	#print(newM.shape)
-	#print("After extension")
-	#pp_matrix(newM)	
 	while(j < n):
 		insertOldColAndGap(newM, oldM, j, j+diff)
 		j += 1
-	#print("Before resize")
-	#print(newM.shape[1])
-	#pp_matrix(newM)
 	newM = newM[newM.nonzero()].reshape((newM.shape[0], -1))
 	newM = np.resize(newM, (newM.shape[0], (j+diff)))	
-	#print("After resize")
-	#print(newM.shape[1])
-	#pp_matrix(newM)
-	
 	return newM
 
 def insertOldColAndGap(newM, oldM, j, jdiff):
 	newM[0:oldM.shape[0],jdiff] = oldM[:,j]
-	#print(decode_matrix(oldM[:,j]))
-	#print(decode_matrix(newM[:,jdiff]))
 	newM[newM.shape[0]-1, jdiff] = ord('-')
-	#print(decode_matrix(newM[:,jdiff]))
 
 def insertOldColAndSym(newM, oldM, j, jdiff, sym):
-	#print("NewM before inserting old col and sym")
-	#pp_matrix(newM)
 	newM[0:oldM.shape[0],jdiff] = oldM[:,j]
-	
 	newM[newM.shape[0]-1, jdiff] = ord(sym)
-	#pp_matrix(newM)
-	#print("NewM after inserting old col and sym")
-	
 	
 def insertGapColAndSym(newM, jdiff, sym):
 	newM[0:newM.shape[0]-1,jdiff] = ord('-')
@@ -200,9 +143,7 @@ def compute_score(s_mat, gc, sequences):
 	center = find_center(sequences)
 	m = construct_alignment(sequences, center)
 	dm = decode_matrix(m)
-	#print("Result of approx:")
-	#pp_matrix(m)
-	#print(m.shape[1])
+	
 	content = []
 	for i in range(0, dm.shape[0]):
 		content.append(str(''.join(dm[i,:])))
@@ -212,23 +153,17 @@ def compute_score(s_mat, gc, sequences):
 	
 if __name__ == "__main__":
     args = sys.argv
-    
-    
-	
     score, _ = util.read_score_matrix_and_alphabet(args[1])
     gap_cost = args[2]
     fastaDictionary = util.read_fasta_file(args[3])
     sequences = [s.replace(" ", "") for s in fastaDictionary.values()]
-    #A = next(sequences)
-    #B = next(sequences)
-    #C = next(sequences)
+
     # Length of the strings plus 1
     n = len(A)
     m = len(B)
     l = len(C)
-    #sequences = ["AGTACC", "AGATCC", "TTATG", "ACTACG", "ACTTGG"] #, "AAACTA", "AGCTAA"]
+	
     center = find_center(sequences)
-    
     m = construct_alignment(sequences, center)
     dm = decode_matrix(m)
 	
@@ -236,7 +171,7 @@ if __name__ == "__main__":
     for i in range(0, dm.shape[0]):
         content.append(str(''.join(dm[i,:])))
     util.write_fasta_file("testfile", content)
-    print("This is center: {}".format(sequences[center]))
-    print(msa_sp_score_3k.compute_sp_score("testfile.fa"))
-	
     
+    print("Score of optimal multiple alignment: \n{}".format(msa_sp_score_3k.compute_sp_score("testfile.fa")))
+    print("Optimal multiple alignment:")
+    pp_matrix(m)
