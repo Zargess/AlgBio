@@ -73,7 +73,7 @@ def backtrack_iter(i,j):
     output1 = ""
     output2 = ""
     while i > 0 or j > 0:
-        if (i > 0 and j > 0) and (T[i,j] == T[i-1, j-1] + score_func([A[i-1], B[j-1]])):
+        if (i > 0 and j > 0) and (T[i,j] == T[i-1, j-1] + score_func((A[i-1], B[j-1]))):
             output1 = A[i-1] + output1
             output2 = B[j-1] + output2
             i -= 1
