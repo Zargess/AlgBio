@@ -14,6 +14,32 @@ gap_cost = 0
 alphabet = []
 T = None
 
+def score_func(key):
+	if key in score_matrix:
+		return score_matrix[key]
+	else:
+		return 0
+
+def cost_iter(n,m):
+	for i in range(0, n+1):
+		for j in range(0, m+1):
+			v1 = float("inf")
+			v2 = float("inf")
+			v3 = float("inf")
+			v4 = float("inf")
+
+			if i > 0 and j > 0:
+				v1 = T[i-1, j-1] + score_func((A[i-1], B[j-1]))
+			if i > 0 and j >= 0:
+				v2 = T[i-1, j] + int(gap_cost)
+			if i >= 0 and j > 0:
+				v3 = T[i, j-1] + int(gap_cost)
+			if i == 0 and j == 0:
+				v4 = 0
+
+			T[i, j] = min(v1, v2, v3, v4)
+	return T[i,j]
+
 def cost(i, j):
     if T[i,j] == float("inf"):
         v1 = float("inf")
@@ -34,13 +60,32 @@ def cost(i, j):
     return T[i,j]
 
 def backtrack(i, j, output1, output2):
-    if (i > 0) and (j > 0) and (T[i,j] == (T[i-1, j-1] + score_matrix[A[i-1], B[j-1]])):
+    if (i > 0) and (j > 0) and (T[i,j] == (T[i-1, j-1] + score_func((A[i-1], B[j-1])))):
         return backtrack(i-1, j-1, A[i-1] + output1, B[j-1] + output2)
     if (i > 0) and (j >= 0) and (T[i,j] == T[i-1, j] + int(gap_cost)):
         return backtrack(i-1, j, A[i-1] + output1, "-" + output2)
     if (i >= 0) and (j > 0) and (T[i,j] == T[i,j-1] + int(gap_cost)):
         return backtrack(i, j-1, "-" + output1, B[j-1] + output2)
 
+    return output1 + "\n" + output2
+	
+def backtrack_iter(i,j):
+    output1 = ""
+    output2 = ""
+    while i > 0 or j > 0:
+        if (i > 0 and j > 0) and (T[i,j] == T[i-1, j-1] + score_func([A[i-1], B[j-1]])):
+            output1 = A[i-1] + output1
+            output2 = B[j-1] + output2
+            i -= 1
+            j -= 1
+        elif (i > 0) and (j >= 0) and (T[i,j] == T[i-1, j] + int(gap_cost)):
+            output1 = A[i-1] + output1
+            output2 = "-" + output2
+            i -= 1
+        elif (i >= 0) and (j > 0) and (T[i,j] == T[i, j-1] + int(gap_cost)):
+            output1 = "-" + output1
+            output2 = B[j-1] + output2
+            j -= 1
     return output1 + "\n" + output2
 
 def runAlgo(string1, string2, s_mat=score_matrix, gc=gap_cost):
@@ -62,12 +107,12 @@ def runAlgo(string1, string2, s_mat=score_matrix, gc=gap_cost):
 	
     T = np.empty([n+1, m+1])
     T[:] = float("inf")
-    s = cost(n,m)
+    s = cost_iter(n,m)
     return s
 
 def runAlgoWithBacktrack(string1, string2, s_mat=score_matrix, gc=gap_cost):
 	runAlgo(string1, string2, s_mat=score_matrix, gc=gap_cost)
-	return backtrack(len(string1), len(string2), "", "").split("\n")
+	return backtrack_iter(len(string1), len(string2)).split("\n")
 	
 def run_experiment(startN, iterations):
     length = startN
@@ -108,7 +153,7 @@ if __name__ == "__main__":
     #res = cost(n,m)
     # TODO: If should_output_allignment == 1 -> print an optimal allignment
     if should_output_allignment == 1:
-        allignment = backtrack(n, m, "", "").split("\n")
+        allignment = backtrack_iter(n, m).split("\n")
         print(">seq1\n" + allignment[0] + "\n")
         print(">seq2\n" + allignment[1] + "\n")
     #print("optimal cost for the two sequences is: \n" + str(res) + "\n")

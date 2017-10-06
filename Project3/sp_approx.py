@@ -30,6 +30,7 @@ def find_center(sequences):
 	bestSeq = -1 
 	for i in range(0, len(sequences)):
 		sum = 0
+		print("Trying {} as center string...".format(i))
 		for j in range (0, len(sequences)):
 			if(i != j):
 				s = linear.runAlgo(sequences[i], sequences[j], s_mat=score, gc=gap_cost)
@@ -73,8 +74,10 @@ def construct_alignment(sequences, bestSeqIdx):
 	for i in range(0, len(sequences[bestSeqIdx])):
 		oldM[0, i] = ord(center[i])
 	
+	
 	for i in range(0, len(sequences)):
 		if(i != bestSeqIdx): 
+			print("Adding alignment nr: {}".format(i))
 			A = linear.runAlgoWithBacktrack(sequences[bestSeqIdx], sequences[i], s_mat=score, gc=gap_cost)
 			newM = extend_alignment(oldM, A)
 			oldM = newM
@@ -170,8 +173,8 @@ if __name__ == "__main__":
     content = []
     for i in range(0, dm.shape[0]):
         content.append(str(''.join(dm[i,:])))
-    util.write_fasta_file("testfile", content)
+    util.write_fasta_file("resultfile", content)
     
     print("Score of optimal multiple alignment: \n{}".format(msa_sp_score_3k.compute_sp_score("testfile.fa")))
-    print("Optimal multiple alignment:")
-    pp_matrix(m)
+    #print("Optimal multiple alignment:")
+    #pp_matrix(m)
