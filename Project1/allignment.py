@@ -107,9 +107,13 @@ if __name__ == "__main__":
     B = fastaSeq2["Seq2"].replace(" ", "")
     n = len(A)
     m = len(B)
+	n1 = len(A1)
+	m2 = len(B1)
 
     T = np.empty([n+1, m+1])
+	T1 = np.empty([n1+1, m1+1])
     T[:] = float("inf")
+	
     res = cost(n,m)
     counter = 0
     print("optimal cost for seqs: " + str(A) + " and " + str(B) + " is: \n" + str(res) + "\n")
