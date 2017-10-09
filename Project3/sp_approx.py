@@ -173,8 +173,14 @@ if __name__ == "__main__":
     content = []
     for i in range(0, dm.shape[0]):
         content.append(str(''.join(dm[i,:])))
-    util.write_fasta_file("resultfile", content)
+    filename = "resultfile"
+    util.write_fasta_file(filename, content)
+	
+    score = msa_sp_score_3k.compute_sp_score(filename + ".fa")
+	
+    with open(filename + "_score.txt", 'w+') as fp:
+        fp.write(str(score))
     
-    print("Score of optimal multiple alignment: \n{}".format(msa_sp_score_3k.compute_sp_score("testfile.fa")))
+    print("Score of optimal multiple alignment: \n{}".format(score))
     #print("Optimal multiple alignment:")
     #pp_matrix(m)
