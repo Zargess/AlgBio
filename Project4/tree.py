@@ -1,4 +1,6 @@
 import sys
+import io
+import newick
 class TreeNode:
     def __init__(self, id, children):
         self.isRootOrSubRoot = False
@@ -9,6 +11,9 @@ class TreeNode:
 
     def isLeaf(self):
         return len(self.children) == 0
+
+    def addChild(self, child):
+        self.children.append(child)
 
 
 dfsdict = {}
@@ -80,8 +85,48 @@ def report_intervals(tree: TreeNode, reportOnlyCandidates):
             res.extend(childintervals)
     return res
 
+def radix_sort_intervals(intervals, n):
+    for k in reversed(range(2)):
+        buckets = [[] for _ in range(n)]
+        for interval in intervals:
+            buckets[interval[k]].append(interval)
+        intervals = [i for bucket in buckets for i in bucket]
+    return intervals
 
-if __name__ == "__main__":
+def intervals_equal(int1, int2):
+    return int1[0] == int2[0] and int1[1] == int2[1]
+
+def compare_intervals_le(int1, int2):
+    if(int1[0] == int2[0]):
+        return int1[1] < int2[1]
+    else:
+        return int1[0] < int2[0]
+
+
+    return int1[0] < int2[0] and int1[1] < int2[1]
+
+def count_shared_intervals(intervalsT1, intervalsT2):
+    #This methods assumes they are sorted and intervalsT2 only contains candidate intervals.
+    total = 0
+    i = 0
+    j = 0
+    l1 =len(intervalsT1)
+    l2 = len(intervalsT2)
+    while(i < l1 and j < l2):
+        int_t1 = intervalsT1[i]
+        int_t2 = intervalsT2[j]
+        if(intervals_equal(int_t1, int_t2)):
+            i += 1
+            j += 1
+            total += 1
+        elif(compare_intervals_le(int_t1, int_t2)):
+            i += 1
+        else:
+            j += 1
+
+    return total
+
+def generate_test_trees():
     # T1
     t4 = TreeNode(4, [])
     t3 = TreeNode(3, [])
@@ -122,16 +167,60 @@ if __name__ == "__main__":
     t2_root = TreeNode(1, [t_all])
     t2_root.isRootOrSubRoot = True
 
+    return t1_root, t2_root
+
+def create_children(descendants):
+    children = []
+    for child in descendants:
+        children.append(TreeNode(child.name, create_children(child.descendants)))
+    return children
+
+def parse_newick_to_tree(filename):
+    with io.open(filename, encoding='utf8') as fp:
+        trees = newick.load(fp)
+
+    tree_root = TreeNode(trees[0].name, [])
+    for child in create_children(trees[0].descendants):
+        tree_root.addChild(child)
+    return tree_root
+
+def compute_rf_distance(t1_root, t2_root):
+    # DFS number T1
     dfs_numbering(t1_root, 1)
     annotate_tree_intervals(t1_root)
 
-
+    # Annotate T2 with numbers and subtreesizes
     annotate_tree_intervals(t2_root)
     annotate_tree_subsetsize(t2_root)
 
-    pp_tree(t2_root, 0)
-    print('')
-    print(report_intervals(t2_root, False))
-    print(report_intervals(t2_root, True))
+    # T1 Intervals
+    t1ints = report_intervals(t1_root, False)
+    n = t1_root.interval[1] + 1
+
+    # T2 candidates and ints
+    t2ints = report_intervals(t2_root, False)
+    t2_cand_ints = report_intervals(t2_root, True)
+
+    t1ints = radix_sort_intervals(t1ints, n)
+    t2_cand_ints = radix_sort_intervals(t2_cand_ints, n)
+
+    numShared = count_shared_intervals(t1ints, t2_cand_ints)
+
+    return (len(t1ints) - numShared) + (len(t2ints) - numShared)
+
+
+if __name__ == "__main__":
+
+    t1_root, t2_root = generate_test_trees()
+    t1_root.isRootOrSubRoot = True
+    t2_root.isRootOrSubRoot = True
+
+
+    #TODO: Root trees if they are not rooted
+    t1 = parse_newick_to_tree('Testdata/tree1.new')
+    t2 = parse_newick_to_tree('Testdata/tree2.new')
+
+    print(compute_rf_distance(t1, t2))
+
 
 
