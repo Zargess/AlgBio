@@ -1,6 +1,9 @@
 import sys
 import io
 import newick
+import math
+import random
+import time
 import itertools
 import os
 
@@ -18,7 +21,7 @@ class TreeNode:
     def addChild(self, child):
         self.children.append(child)
 
-
+counter = 0
 dfsdict = {}
 
 def pp_tree(tree : TreeNode, lvl):
@@ -34,6 +37,17 @@ def pp_tree(tree : TreeNode, lvl):
     #    print("ID: {} SUBTREESIZE: {}".format(tree.id, tree.subtree_size))
     for child in tree.children:
         pp_tree(child, lvl+1)
+
+def count_leaves(tree : TreeNode):
+    if(tree.isLeaf()):
+        #print("Hello I am leaf with name: {}".format(tree.id))
+        return 1
+    else:
+        counter = 0
+        for child in tree.children:
+            counter += count_leaves(child)
+        return counter
+
 
 def dfs_numbering(tree : TreeNode, currentid):
     if (tree.isLeaf()):
@@ -211,20 +225,74 @@ def compute_rf_distance(t1_root, t2_root):
 
     return (len(t1ints) - numShared) + (len(t2ints) - numShared)
 
+def generate_tree(numLeaves):
+    root = TreeNode("id" + str(numLeaves), [])
+    if(numLeaves == 1):
+        return root
+    elif(numLeaves >= 3):
+        coin = random.randint(0, 1)
+        if(coin):
+            athird = (numLeaves / 3)
+            if(numLeaves% 3 == 0):
+                root.addChild(generate_tree(athird))
+                root.addChild(generate_tree(athird))
+                root.addChild(generate_tree(athird))
+            elif (numLeaves % 3 == 1):
+                root.addChild(generate_tree(math.floor(athird)))
+                root.addChild(generate_tree(math.floor(athird)))
+                root.addChild(generate_tree(math.ceil(athird)))
+            elif (numLeaves % 3 == 2):
+                root.addChild(generate_tree(math.floor(athird)))
+                root.addChild(generate_tree(math.ceil(athird)))
+                root.addChild(generate_tree(math.ceil(athird)))
+        else:
+            half = numLeaves / 2
+            root.addChild(generate_tree(math.floor(half)))
+            root.addChild(generate_tree(math.ceil(half)))
+
+    elif (numLeaves >= 2):
+        half = numLeaves / 2
+        root.addChild(generate_tree(math.floor(half)))
+        root.addChild(generate_tree(math.ceil(half)))
+    #if (numLeaves >= 1):
+        #root.addChild(generate_tree(numLeaves-1))
+    return root
+
 
 if __name__ == "__main__":
+    results = []
+    for i in range(1000, 16000):
+        tree1 = generate_tree(i)
+        tree2 = generate_tree(i)
+        start = time.clock()
+        dist = compute_rf_distance(tree1, tree2)
+        end = time.clock() - start
 
+        results.append((i, end))
+
+    with open("output.txt", "w+") as fp:
+        for (i, time) in results:
+            fp.write(str(i) + "," + str(time) + "\n")
+    '''
     folder = sys.argv[1]
+    folder2 = sys.argv[2]
     allFiles = os.listdir(folder)
+    allFilesPerm = os.listdir(folder2)
 
 
     combs = itertools.combinations(allFiles, 2)
     print(combs)
     i = 0
-    for file in allFiles:
+    for (file, filePerm) in zip(allFiles, allFilesPerm):
+        #print((file,filePerm))
         t1 = parse_newick_to_tree(folder + "\\" + file)
-        dist = compute_rf_distance(t1, t1)
-        print("Distance reflex: {}".format(dist))
+        t2 = parse_newick_to_tree(folder2 + "\\" + filePerm)
+
+        #print("Leaves in T1: {} Leaves in T2: {}".format(count_leaves(t1), count_leaves(t2)))
+        dist = compute_rf_distance(t1, t2)
+
+        print("Distance between: {} and {} is: {}.".format(file, filePerm, dist))
+    
     for comb in combs:
         i += 1
         t1 = parse_newick_to_tree(folder + "\\" + comb[0])
@@ -241,12 +309,13 @@ if __name__ == "__main__":
     t1_root, t2_root = generate_test_trees()
     t1_root.isRootOrSubRoot = True
     t2_root.isRootOrSubRoot = True
-
+    leafcount = count_leaves(t2_root)
 
     #TODO: Root trees if they are not rooted
     t1 = parse_newick_to_tree('Testdata/tree1.new')
-    t2 = parse_newick_to_tree('Testdata/tree2.new')
 
+    t2 = parse_newick_to_tree('Testdata/tree2.new')
+    '''
 
 
 
