@@ -46,16 +46,16 @@ def plotValues(allData, ylabel):
 	print(allData)
 	for ((inputsize, value), legend) in allData:
 		plt.plot(inputsize, value, marker=next(marker), linestyle ='--', label=legend)
-		highestY = value[len(value)-1]
+		#highestY = value[len(value)-1]
 	
-	plt.axhline(y=(4/3), color='r', linestyle='-')
-	plt.axhline(y=1, color='g', linestyle='-')
+	#plt.axhline(y=(4/3), color='r', linestyle='-')
+	#plt.axhline(y=1, color='g', linestyle='-')
 	plt.legend(loc=2, borderaxespad=0.)
 	plt.xlabel('Inputsize')
 	plt.ylabel(ylabel)
 	#plt.xscale("log", basex=2)
 	#ymin, ymax = ylim()
-	plt.ylim(ymax=1.4)
+	#plt.ylim(ymax=3)
 	plt.show()
 	#plt.axvline(x=2**13, color='black', linestyle='--', label="L1 cache size")
 	#plt.text(2**13, highestY*1.4	, "L1 cache size",  rotation=270)
@@ -82,8 +82,8 @@ def plot(folder):
 	# List elements are tuples with layout ((N, value), legend)
 	#Plotting runtime divided by log(n)
 	allRuntimes = []
-	allRuntimes.append((readFile("./" + folder + "/results.txt"), "Ratio"))
-	plotValues(allRuntimes, 'Approx/Exact ratio')
+	allRuntimes.append((readFile("./" + folder + "/output.txt"), "Runtime"))
+	plotValues(allRuntimes, 'Runtime')
 	
 	plt.show()
 	

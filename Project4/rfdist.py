@@ -260,15 +260,23 @@ def generate_tree(numLeaves):
 
 
 if __name__ == "__main__":
-    results = []
-    for i in range(1000, 16000):
-        tree1 = generate_tree(i)
-        tree2 = generate_tree(i)
-        start = time.clock()
-        dist = compute_rf_distance(tree1, tree2)
-        end = time.clock() - start
 
-        results.append((i, end))
+    results = []
+    n = 1000
+    for i in range(20):
+        endSum = 0
+        for j in range(5):
+            tree1 = generate_tree(n)
+            tree2 = generate_tree(n)
+            start = time.clock()
+            dist = compute_rf_distance(tree1, tree2)
+            end = time.clock() - start
+
+            endSum += end
+
+        print("Completed iteration: {}".format(i))
+        results.append((n, endSum / 5))
+        n = int(n * 1.3)
 
     with open("output.txt", "w+") as fp:
         for (i, time) in results:
