@@ -1,6 +1,9 @@
 import sys
 import io
 import newick
+import itertools
+import os
+
 class TreeNode:
     def __init__(self, id, children):
         self.isRootOrSubRoot = False
@@ -211,6 +214,30 @@ def compute_rf_distance(t1_root, t2_root):
 
 if __name__ == "__main__":
 
+    folder = sys.argv[1]
+    allFiles = os.listdir(folder)
+
+
+    combs = itertools.combinations(allFiles, 2)
+    print(combs)
+    i = 0
+    for file in allFiles:
+        t1 = parse_newick_to_tree(folder + "\\" + file)
+        dist = compute_rf_distance(t1, t1)
+        print("Distance reflex: {}".format(dist))
+    for comb in combs:
+        i += 1
+        t1 = parse_newick_to_tree(folder + "\\" + comb[0])
+        t2 = parse_newick_to_tree(folder + "\\" + comb[1])
+        dist = compute_rf_distance(t1, t2)
+        dist2 = compute_rf_distance(t2, t1)
+        equal = dist == dist2
+        print("Distance between: {} and {} is: {}. Symmetric? {}".format(comb[0], comb[1], dist, equal))
+    print(i)
+    #with open(folder + "\\" + allFiles[0]) as fp:
+
+    #print(allFiles)
+
     t1_root, t2_root = generate_test_trees()
     t1_root.isRootOrSubRoot = True
     t2_root.isRootOrSubRoot = True
@@ -220,7 +247,7 @@ if __name__ == "__main__":
     t1 = parse_newick_to_tree('Testdata/tree1.new')
     t2 = parse_newick_to_tree('Testdata/tree2.new')
 
-    print(compute_rf_distance(t1, t2))
+
 
 
 
