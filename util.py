@@ -59,12 +59,12 @@ def read_score_matrix_and_alphabet(filename):
                 first_line = False
                 continue
             lines.append(line)
-            symbols.append(line[0])
+            symbols.append(line.split(" ")[0])
 
         for i in range(0,len(lines)):
-            char_set = lines[i].split("  ")
+            char_set = lines[i].split(" ")
             for j in range(1, len(char_set)):
-                score_matrix[(symbols[i], symbols[j-1])] = int(char_set[j])
+                score_matrix[(symbols[i], symbols[j-1])] = float(char_set[j])
     return score_matrix,symbols
 
 def parse_arguments(args):

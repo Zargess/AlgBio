@@ -1,0 +1,30 @@
+﻿89_Adeno_E3_CR1
+
+
+Days              : 0
+Hours             : 0
+Minutes           : 0
+Seconds           : 0
+Milliseconds      : 34
+Ticks             : 348850
+TotalDays         : 4,03761574074074E-07
+TotalHours        : 9,69027777777778E-06
+TotalMinutes      : 0,000581416666666667
+TotalSeconds      : 0,034885
+TotalMilliseconds : 34,885
+
+89_Adeno_E3_CR1_2
+Days              : 0
+Hours             : 0
+Minutes           : 0
+Seconds           : 0
+Milliseconds      : 32
+Ticks             : 326389
+TotalDays         : 3,77765046296296E-07
+TotalHours        : 9,06636111111111E-06
+TotalMinutes      : 0,000543981666666667
+TotalSeconds      : 0,0326389
+TotalMilliseconds : 32,6389
+
+
+

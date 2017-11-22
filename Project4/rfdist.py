@@ -175,7 +175,7 @@ def create_children(descendants):
     return children
 
 def parse_newick_to_tree(filename):
-    with io.open(filename, encoding='utf8') as fp:
+    with io.open(filename, encoding='ascii') as fp:
         trees = newick.load(fp)
 
     tree_root = TreeNode(trees[0].name, [])
