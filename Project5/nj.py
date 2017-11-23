@@ -9,38 +9,47 @@ import newick
 id_map = {}
 id_map_rev = {}
 S = {}
+shape = None
 
 def compute_avg_row_sum(disMatrix, i):
-    res = 0
-    for m in range(0, disMatrix.shape[1]):
-        if(disMatrix[i, m] != float("inf")):
-            res += disMatrix[i, m]
+    res = np.nansum(disMatrix[i,:])
     res /= (len(S) - 2)
     return res
 
 def compute_idx_min_N_entry(disMatrix):
-    N = np.empty(disMatrix.shape)
-    for i in range(disMatrix.shape[0]):
-        for j in range(disMatrix.shape[1]):
-            N[i,j] = disMatrix[i, j] - (compute_avg_row_sum(disMatrix, i) + compute_avg_row_sum(disMatrix, j))
-    np.fill_diagonal(N, float("inf"))
-    return np.unravel_index(N.argmin(), N.shape)
+    bestValue = float("inf")
+    bestTuple = None
+    rowSumMap = {}
+    for i in range(shape[0]):
+        rowSumMap[i] = compute_avg_row_sum(disMatrix, i)
+
+    for i in range(shape[0]):
+        for j in range(shape[1]):
+            if(i == j):
+                continue
+            value = disMatrix[i, j] - (rowSumMap[i] + rowSumMap[j])
+            if(value < bestValue):
+                bestValue = value
+                bestTuple = (i, j, rowSumMap[i], rowSumMap[j])
+    return bestTuple
 
 def rename_recursive(node):
-    if(node.name != "-1"):
+    if(node.name != "root"):
         node.name = id_map_rev[int(node.name)]
     for child in node.descendants:
         rename_recursive(child)
 
 
 if __name__ == "__main__":
+    global shape
     if (len(sys.argv) != 2):
         exit(-1)
 
     filename = sys.argv[1]
-    #filename = "example_slide4.phy"
     dict_matrix, taxa = util.read_score_matrix_and_alphabet(filename)
-    disMatrix = np.empty((len(taxa), len(taxa)))
+    disMatrix = np.full((2*len(taxa), 2*len(taxa)), np.nan)
+    shape = (len(taxa) , len(taxa))
+
 
     # Mapping between symbols and internal IDs.
     id = 0
@@ -56,17 +65,15 @@ if __name__ == "__main__":
         j = id_map[entry[1]]
         disMatrix[i, j] = dict_matrix[entry]
 
-
     while len(S) > 3:
-        (i, j) = compute_idx_min_N_entry(disMatrix)
-        iRowSum = compute_avg_row_sum(disMatrix, i)
-        jRowSum = compute_avg_row_sum(disMatrix, j)
+        #print("Starting iteration with |S| = {}".format(len(S)))
+        (i, j, iRowSum, jRowSum) = compute_idx_min_N_entry(disMatrix)
 
         iNode = S[i]
         iNode.length = (0.5 * (disMatrix[i, j] + iRowSum - jRowSum))
         jNode = S[j]
         jNode.length = (0.5 * (disMatrix[i, j] + jRowSum - iRowSum))
-        newID = disMatrix.shape[0]
+        newID = shape[0]
         newNode = newick.Node.create(name=str(newID), descendants=[iNode, jNode])
         S.pop(i)
         S.pop(j)
@@ -76,18 +83,18 @@ if __name__ == "__main__":
 
         S[newID] = newNode
 
-        disMatrix = np.insert(disMatrix, disMatrix.shape[0], 0, axis=0)
-        disMatrix = np.insert(disMatrix, disMatrix.shape[1], 0, axis=1)
 
-        for m in range(disMatrix.shape[0] - 1):
+        for m in range(shape[0]):
             if m != i and m != j:
-                disMatrix[disMatrix.shape[0] - 1, m] = 0.5 * (disMatrix[i, m] + disMatrix[j, m] - disMatrix[i, j])
-                disMatrix[m, disMatrix.shape[0] - 1] = 0.5 * (disMatrix[i, m] + disMatrix[j, m] - disMatrix[i, j])
+                newDist = 0.5 * (disMatrix[i, m] + disMatrix[j, m] - disMatrix[i, j])
+                disMatrix[shape[0], m] = newDist
+                disMatrix[m, shape[0]] = newDist
+        shape = (shape[0] + 1, shape[1] + 1)
 
-        disMatrix[i, :] = float("inf")
-        disMatrix[j, :] = float("inf")
-        disMatrix[:, i] = float("inf")
-        disMatrix[:, j] = float("inf")
+        disMatrix[i, :] = np.nan #float("inf")
+        disMatrix[j, :] = np.nan #float("inf")
+        disMatrix[:, i] = np.nan #float("inf")
+        disMatrix[:, j] = np.nan #float("inf")
 
 
 
@@ -103,10 +110,10 @@ if __name__ == "__main__":
     S[keys[1]].length = gamma_v_j
     S[keys[2]].length = gamma_v_m
 
-    S[-1] = newick.Node.create(name="-1", descendants=[S[keys[0]], S[keys[1]], S[keys[2]]])
+    S["root"] = newick.Node.create(name="root", descendants=[S[keys[0]], S[keys[1]], S[keys[2]]])
 
-    rename_recursive(S[-1])
-    print(newick.dumps(S[-1]))
+    rename_recursive(S["root"])
+    print(newick.dumps(S["root"]))
 
 
 

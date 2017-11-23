@@ -2,7 +2,7 @@
 $ourtimes = New-Object System.Collections.Generic.List[System.Object]
 $rapidtimes = New-Object System.Collections.Generic.List[System.Object]
 $quicktimes = New-Object System.Collections.Generic.List[System.Object]
-$files = Get-ChildItem "C:\Users\mathias\AlgBio\Project5\test" 
+$files = Get-ChildItem "C:\Users\mathias\AlgBio\Project5\unique_distance_matrices" 
 foreach($f in $files) {
 	$outname1 =  $f.BaseName + "_ours.newick"
 	$outname2 =  $f.BaseName + "_rapid.newick"
